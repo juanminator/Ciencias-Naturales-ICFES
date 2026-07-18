@@ -175,13 +175,46 @@
             id: 2,
             text: "23. En la siguiente tabla se encuentra la información de dos genes que se heredan y expresan separadamente, en una población de ardillas silvestres.",
             media: `
-                <table>
-                    <tr><th>GEN</th><th>Características</th><th>Genotipos</th><th>Fenotipos</th></tr>
-                    <tr><td rowspan="3">A</td><td rowspan="3">Color de pelo</td><td>AA / Aa</td><td>Gris</td></tr>
-                    <tr><td>aa</td><td>Café</td></tr>
-                    <tr><td rowspan="3">B</td><td rowspan="3">Longitud de la cola</td><td>BB / Bb</td><td>Larga</td></tr>
-                    <tr><td>bb</td><td>Corta</td></tr>
-                </table>
+               <table>
+    <thead>
+        <tr>
+            <th>GEN</th>
+            <th>Características para la cual codifica</th>
+            <th>Genotipos</th>
+            <th>Fenotipos</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td rowspan="3">A</td>
+            <td rowspan="3">Color de pelo</td>
+            <td>AA</td>
+            <td>Gris</td>
+        </tr>
+        <tr>
+            <td>Aa</td>
+            <td>Gris</td>
+        </tr>
+        <tr>
+            <td>aa</td>
+            <td>Café</td>
+        </tr>
+        <tr>
+            <td rowspan="3">B</td>
+            <td rowspan="3">Longitud de la cola</td>
+            <td>BB</td>
+            <td>Larga</td>
+        </tr>
+        <tr>
+            <td>Bb</td>
+            <td>Larga</td>
+        </tr>
+        <tr>
+            <td>bb</td>
+            <td>Corta</td>
+        </tr>
+    </tbody>
+</table>
                 <img src="image_c6156a.png alt="Ardillas silvestres" style="display:none;">
                 <p>Si se cruzan un macho y una hembra de color gris y cola larga, heterocigotos para ambas características (AaBb x AaBb), la probabilidad de encontrar en la descendencia una ardilla de color café y cola corta es de:</p>`,
             options: ["A. 50%", "B. 25%", "C. 12.5%", "D. 6.25%"],
