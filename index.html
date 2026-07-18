@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario Interactivo - Ciencias Naturales</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --correct-color: #27ae60;
+            --incorrect-color: #e74c3c;
+            --bg-color: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+        .question-card {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .question-text {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .question-media {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .question-media img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table, th, td {
+            border: 1px solid #bdc3c7;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #ecf0f1;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background: #e9ecef;
+            border-color: #ced4da;
+        }
+        .option.disabled {
+            pointer-events: none;
+        }
+        .option.correct {
+            background: #d4edda;
+            border-color: var(--correct-color);
+            color: #155724;
+        }
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: var(--incorrect-color);
+            color: #721c24;
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-weight: 500;
+        }
+        .feedback.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        .feedback.correct-feedback {
+            background-color: #d4edda;
+            border-left: 5px solid var(--correct-color);
+        }
+        .feedback.incorrect-feedback {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+        }
+        .btn-restart {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #fff;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 30px;
+        }
+        .btn-restart:hover {
+            background-color: #2980b9;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Diagnóstico Interactivo</h1>
+    <div id="quiz-container"></div>
+    <button class="btn-restart" onclick="initQuiz()">🔄 Reiniciar Cuestionario</button>
+</div>
+
+<script>
+    // Base de datos de las preguntas
+    const quizData = [
+        {
+            id: 1,
+            text: "21. En los seres vivos el contenido interno de agua se mantiene constante gracias a una serie de mecanismos reguladores. El siguiente cuadro muestra la función de dos hormonas implicadas en el equilibrio hídrico.",
+            media: `
+                <table>
+                    <tr><th>Hormona</th><th>Función</th></tr>
+                    <tr><td>ADH</td><td>Incrementa la reabsorción de agua</td></tr>
+                    <tr><td>Aldosterona</td><td>Incrementa la reabsorción de iones de sodio y cloruro en los riñones</td></tr>
+                </table>
+                <p>Si se piensa en términos de mantenimiento de la cantidad de agua en el cuerpo, podemos decir que la función de estas hormonas es:</p>`,
+            options: [
+                "A. Opuesta, ya que una aumenta la eliminación de iones y la otra la disminuye.",
+                "B. Diferente, debido a que una aumenta la cantidad de agua en la sangre y la otra la disminuye.",
+                "C. Similar, porque las dos conllevan a un aumento en el volumen de agua en la sangre.",
+                "D. Incompatible, porque una anula la acción de la otra."
+            ],
+            correctIndex: 2,
+            feedback: "<strong>Análisis correcto:</strong> Ambas hormonas generan un aumento del volumen hídrico. La ADH retiene agua directamente y la Aldosterona retiene sodio, lo cual crea un gradiente osmótico que termina atrayendo agua hacia la sangre."
+        },
+        {
+            id: 2,
+            text: "23. En la siguiente tabla se encuentra la información de dos genes que se heredan y expresan separadamente, en una población de ardillas silvestres.",
+            media: `
+                <table>
+                    <tr><th>GEN</th><th>Características</th><th>Genotipos</th><th>Fenotipos</th></tr>
+                    <tr><td rowspan="3">A</td><td rowspan="3">Color de pelo</td><td>AA / Aa</td><td>Gris</td></tr>
+                    <tr><td>aa</td><td>Café</td></tr>
+                    <tr><td rowspan="3">B</td><td rowspan="3">Longitud de la cola</td><td>BB / Bb</td><td>Larga</td></tr>
+                    <tr><td>bb</td><td>Corta</td></tr>
+                </table>
+                <img src="image_c6156a.png" alt="Ardillas silvestres" style="display:none;">
+                <p>Si se cruzan un macho y una hembra de color gris y cola larga, heterocigotos para ambas características (AaBb x AaBb), la probabilidad de encontrar en la descendencia una ardilla de color café y cola corta es de:</p>`,
+            options: ["A. 50%", "B. 25%", "C. 12.5%", "D. 6.25%"],
+            correctIndex: 3,
+            feedback: "<strong>Análisis correcto:</strong> Al ser herencia independiente, se calculan las probabilidades separadas: P(café 'aa') = 1/4. P(cola corta 'bb') = 1/4. Al multiplicarlas (1/4 * 1/4) da 1/16, que equivale al 6.25%."
+        },
+        {
+            id: 3,
+            text: "31. Dentro de una caja hermética, de paredes totalmente aislantes y al vacío, se halla un trozo de hielo a –20ºC. La caja contiene una bombilla inicialmente apagada.",
+            media: `<img src="image_d10e69.png" alt="Caja con hielo">
+                    <p>Mientras la bombilla permanece apagada, la gráfica que muestra la temperatura del hielo en función del tiempo es:</p>`,
+            options: [
+                "A. Gráfica de aumento escalonado",
+                "B. Gráfica de línea horizontal constante",
+                "C. Gráfica de línea recta con pendiente positiva",
+                "D. Gráfica de curva ascendente"
+            ],
+            correctIndex: 1,
+            feedback: "<strong>Análisis correcto:</strong> Al ser un sistema adiabático (paredes aislantes) y al vacío, no existe transferencia de calor (Q=0) hacia el hielo. Por ende, su temperatura se mantiene constante a lo largo del tiempo."
+        },
+        {
+            id: 4,
+            text: "34. En la figura se muestra un circuito eléctrico con una fuente de voltaje V y dos resistencias eléctricas de valor R.",
+            media: `<img src="image_d160dd.png" alt="Circuito en paralelo">
+                    <p>En términos de la corriente de la batería (i), los valores de las corrientes ia e ib son, respectivamente:</p>`,
+            options: [
+                "A. i/2, i/2",
+                "B. 2i, i",
+                "C. i, i",
+                "D. i, 2i"
+            ],
+            correctIndex: 0,
+            feedback: "<strong>Análisis correcto:</strong> Las resistencias están en paralelo y tienen el mismo valor óhmico (R). Por la Ley de Nodos de Kirchhoff, la corriente total (i) se divide equitativamente en ambas ramas, resultando en i/2 para cada una."
+        },
+        {
+            id: 5,
+            text: "37. Un paracaidista se lanza de un avión y registra su rapidez de caída en función del tiempo en la siguiente gráfica.",
+            media: `<img src="image_d16465.png" alt="Gráfica de rapidez vs tiempo">
+                    <img src="image_d1643f.png" alt="Enunciado paracaidista" style="display:none;">
+                    <p>A partir de la información anterior, luego de 7 segundos el paracaidista:</p>`,
+            options: [
+                "A. Aumenta su rapidez.",
+                "B. Mantiene su rapidez en 0 m/s.",
+                "C. Disminuye su rapidez.",
+                "D. Mantiene su rapidez en 40 m/s."
+            ],
+            correctIndex: 3,
+            feedback: "<strong>Análisis correcto:</strong> A los 7 segundos la curva se estabiliza de forma asintótica (línea horizontal). Esto indica que alcanza la velocidad terminal, manteniendo una rapidez constante de 40 m/s al equilibrarse el peso con la fricción del aire."
+        },
+        {
+            id: 6,
+            text: "42. Dentro de una caja se acciona una pipeta de gas helio y con el transcurso del tiempo el interior de la caja se impregna con este gas. Las partículas de helio se mueven en el interior de la caja como se muestra en el modelo de la figura.",
+            media: `<img src="image_d16808.png" alt="Partículas de helio">
+                    <p>Según lo anterior, ¿cuál de las siguientes inferencias se puede hacer con el anterior modelo?</p>`,
+            options: [
+                "A. Las partículas que se mueven hacia arriba pesan más.",
+                "B. El volumen que ocupan las partículas de helio es igual al volumen de la caja.",
+                "C. Cuando las partículas salen de la pipeta pasan a estado líquido.",
+                "D. Las partículas gaseosas se dividen para lograr impregnar la caja."
+            ],
+            correctIndex: 1,
+            feedback: "<strong>Análisis correcto:</strong> Según la Teoría Cinética de los Gases, las partículas de un gas ideal se expanden libre y caóticamente hasta llenar todo el espacio disponible, por lo que su volumen es exactamente el del recipiente que lo contiene."
+        }
+    ];
+
+    const quizContainer = document.getElementById('quiz-container');
+
+    function initQuiz() {
+        quizContainer.innerHTML = ''; // Limpiar contenedor
+        
+        quizData.forEach((q, index) => {
+            const questionCard = document.createElement('div');
+            questionCard.className = 'question-card';
+            
+            // Construir opciones
+            let optionsHTML = '';
+            q.options.forEach((opt, optIndex) => {
+                optionsHTML += `<div class="option" onclick="checkAnswer(${index}, ${optIndex}, this)">${opt}</div>`;
+            });
+
+            questionCard.innerHTML = `
+                <div class="question-text">${q.text}</div>
+                ${q.media ? `<div class="question-media">${q.media}</div>` : ''}
+                <div class="options" id="options-${index}">
+                    ${optionsHTML}
+                </div>
+                <div class="feedback" id="feedback-${index}"></div>
+            `;
+            quizContainer.appendChild(questionCard);
+        });
+    }
+
+    function checkAnswer(questionIndex, selectedIndex, element) {
+        const question = quizData[questionIndex];
+        const optionsContainer = document.getElementById(`options-${questionIndex}`);
+        const feedbackBox = document.getElementById(`feedback-${questionIndex}`);
+        const allOptions = optionsContainer.children;
+
+        // Deshabilitar todas las opciones para esta pregunta
+        for(let i = 0; i < allOptions.length; i++) {
+            allOptions[i].classList.add('disabled');
+            
+            // Mostrar la correcta siempre, independientemente de lo elegido
+            if(i === question.correctIndex) {
+                allOptions[i].classList.add('correct');
+            }
+        }
+
+        // Evaluar selección del usuario
+        if (selectedIndex === question.correctIndex) {
+            feedbackBox.innerHTML = '✅ ' + question.feedback;
+            feedbackBox.className = 'feedback show correct-feedback';
+        } else {
+            element.classList.add('incorrect');
+            feedbackBox.innerHTML = '❌ <strong>Respuesta incorrecta.</strong><br>' + question.feedback;
+            feedbackBox.className = 'feedback show incorrect-feedback';
+        }
+    }
+
+    // Iniciar cuestionario al cargar la página
+    window.onload = initQuiz;
+</script>
+
+</body>
+</html>
